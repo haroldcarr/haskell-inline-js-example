@@ -1,0 +1,76 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.6.
+--
+-- see: https://github.com/sol/hpack
+
+name:           inline-js-example
+version:        0.0.1.0
+build-type:     Simple
+data-files:
+    jsbits/node_modules/left-pad/index.js
+
+library
+  exposed-modules:
+      Language.JavaScript.Inline
+      Language.JavaScript.Inline.Aeson
+      Language.JavaScript.Inline.JSParse
+      Language.JavaScript.Inline.TH
+      Lib
+  other-modules:
+      Paths_inline_js_example
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fhide-source-paths
+  build-depends:
+      aeson
+    , base >=4.11 && <5
+    , bytestring
+    , file-embed
+    , filepath
+    , inline-js-core
+    , template-haskell
+    , unliftio
+  default-language: Haskell2010
+
+executable main
+  main-is: Main.hs
+  other-modules:
+      
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fhide-source-paths -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.11 && <5
+    , bytestring
+    , file-embed
+    , filepath
+    , inline-js-core
+    , inline-js-example
+    , template-haskell
+    , unliftio
+  default-language: Haskell2010
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fhide-source-paths -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.11 && <5
+    , bytestring
+    , file-embed
+    , filepath
+    , inline-js-core
+    , inline-js-example
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+    , template-haskell
+    , unliftio
+  default-language: Haskell2010

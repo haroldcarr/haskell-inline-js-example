@@ -1,0 +1,141 @@
+How to use inline-js in a Haskell package.
+
+I will start by saying, there are many things "wrong" with how this is done.
+But it is the first thing I have got to work.
+I am hoping others will suggest improvements.
+
+#+begin_comment
+ (eepitch-shell)
+ (eepitch-kill)
+ (eepitch-shell)
+#+end_comment
+
+* usage
+
+** nix usage
+
+assumes:
+
+#+begin_src
+nix --version
+# => nix (Nix) 2.6.1  (it might work with older versions)
+
+cat ~/.config/nix/nix.conf
+# =>
+# ...
+# experimental-features       = nix-command
+# extra-experimental-features = flakes
+# ...
+
+nix profile install nixpkgs#haskell.packages.ghc8107.hpack
+#+end_src
+
+usage:
+
+#+begin_src
+hpack && nix build
+
+./result/bin/main
+# => "  foo"
+
+nix flake check
+# => no output, unless it fails
+#+end_src
+
+** stack usage
+
+assumes
+
+#+begin_src
+nix profile install nixpkgs#nodejs
+#+end_src
+
+usage
+
+#+begin_src
+hpack && stack build
+
+stack exec main
+# => "  foo"
+
+stack test
+# => ...
+# inline-js-example
+#   left-pad: OK (0.09s)
+# All 1 tests passed (0.20s)
+# ...
+#+end_src
+
+** cabal (with nix) usage.
+
+This did not work. It was complaining about "unknown package inline-js".
+
+So I did the stack steps. After doing the stack steps this now works.
+I assume it is because I copied =src/Language/*= and =jsbits/main.js= into the project.
+
+#+begin_src
+hpack && nix develop
+
+cabal build
+
+cabal run main
+# => "  foo"
+
+cabal test
+# => 1 of 1 test suites (1 of 1 test cases) passed.
+
+exit
+#+end_src
+
+** clean
+
+#+begin_src
+rm -rf .stack-work  dist-newstyle result
+#+end_src
+
+* hacks to get it to compile
+
+These steps do /not/ need to be done again.
+
+#+begin_src
+
+# I did these steps because neither stack nor cabal could find 'inline-js'.
+
+pushd /tmp
+git clone git@github.com:tweag/inline-js.git
+popd
+
+cp -rp /tmp/inline-js/inline-js/src/Language   src
+cp     /tmp/inline-js/inline-js/jsbits/main.js jsbits
+#+end_src
+
+* redundancies (but currently necessary)
+
+=inline-js= is not available in nixpkgs.
+The =flakes.nix= file contains and =override= to install it from github.
+The override is from the [[https://github.com/tweag/inline-js/blob/master/README.md][README]] in Tweag's inline-js repo.
+It seems the =inline-js-src= should really be something in the =inputs= section,
+but I do not have enough experience (yet) with nix and flakes to do that.
+
+The inline-js repo, tag and subdir is specified in multiple places:
+- =flake.nix=
+- =cabal.project=
+- =stack.yaml=
+They need to be kept in sync when doing updates.
+And, /importantly/ the git cloning and copying of =src/Language/*=
+needs to be kept in sync.
+Of course, it would be best if that info was specified /once/ and that the copying
+was not necessary.
+
+* needs more usage/testing
+
+I just barely got this to work.
+I still don't know how to really use inline-js.
+So there could be other problems that have not been flushed out.
+
+
+
+
+
+
+
